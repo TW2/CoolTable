@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28922.388
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoolTable", "CoolTable\CoolTable.csproj", "{EEB95F2A-CA27-487F-9F85-91DD09AF69AF}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{EEB95F2A-CA27-487F-9F85-91DD09AF69AF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EEB95F2A-CA27-487F-9F85-91DD09AF69AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EEB95F2A-CA27-487F-9F85-91DD09AF69AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EEB95F2A-CA27-487F-9F85-91DD09AF69AF}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {5F31529F-6C7B-4DD4-A5C4-AE87B892E82D}
+	EndGlobalSection
+EndGlobal
