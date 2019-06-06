@@ -11,3 +11,34 @@ Wanted functionnalities :
 * Renderer for ComboBox (visible entry) - not implemented
 
 others...
+
+Example :
+
+<img src="https://github.com/TW2/CoolTable/blob/master/screenshots/v6%20-%20001.PNG" />
+
+```c#
+public partial class Form1 : Form
+    {
+        public Form1()
+        {
+            InitializeComponent();
+            Init();
+        }
+
+        private void Init()
+        {
+            table1.AddLineNumberColumn();
+            table1.AddColumn(Column.Create(typeof(string), "A"));
+            table1.AddColumn(Column.Create(typeof(string), "B"));
+            table1.AddColumn(Column.Create(typeof(string), "C"));
+
+            table1.AddRow(new object[] { "", "Bananas", "35€", "1kg" });
+            table1.AddRow(new object[] { "", "Bananas", "35€", "1kg" });
+            table1.AddRow(new object[] { "", "Bananas", "35€", "1kg" });
+            table1.AddRow(new object[] { "", "Bananas", "35€", "1kg" });
+            table1.AddRow(new object[] { "", "Bananas", "35€", "1kg" });
+            table1.AddRow(new object[] { "", "Bananas", "35€", "1kg" });
+            table1.AddRow(new object[] { "", "Bananas", "35€", "1kg" });
+        }
+    }
+```
