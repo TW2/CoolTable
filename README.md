@@ -14,7 +14,7 @@ others...
 
 Example :
 
-<img src="https://github.com/TW2/CoolTable/blob/master/screenshots/v6%20-%20001.PNG" />
+<img src="https://github.com/TW2/CoolTable/blob/master/screenshots/v6%20-%20002.PNG" />
 
 ```c#
 public partial class Form1 : Form
