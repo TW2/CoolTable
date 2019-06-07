@@ -15,15 +15,21 @@ namespace CoolTable
     {
         Bag bag = new Bag();
         List<Column> columns = new List<Column>();
-        Scrollbar sbVertical = Scrollbar.Create(ScrollBarType.Right); // Right (default)
-        Scrollbar sbHorizontal = Scrollbar.Create(ScrollBarType.Bottom); // Bottom
+        ScrollBarManager manager = null;
 
         public Table()
         {
             InitializeComponent();
             Console.WriteLine("Hello World");
             DoubleBuffered = true;
+            manager = ScrollBarManager.Create(ScrollBarCorner._3_Right_Bottom, this);
+            Resize += Table_Resize;
             Paint += Table_Paint;
+        }
+
+        private void Table_Resize(object sender, EventArgs e)
+        {
+            Refresh();
         }
 
         private void Table_Paint(object sender, PaintEventArgs e)
@@ -31,14 +37,17 @@ namespace CoolTable
             //Initialization for table
             float x = 0;// - horScrollBar.Value;
             float xColumn, yRow;
-            float xa, ya;
             int lineIndex = 0;
-            PointF p1, p2, p3;
 
             //==============================================================================
             // Fill the background with default back color
             //------------------------------------------------------------------------------
             e.Graphics.FillRectangle(new SolidBrush(Color.White), 0, 0, Width, Height);
+
+            //==============================================================================
+            // Update scrollbars
+            //------------------------------------------------------------------------------
+            manager.DrawScrollbars(e);
 
             #region Header of a table
 
@@ -191,253 +200,35 @@ namespace CoolTable
             //==============================================================================
             // CUSTOM SCROLLBARs
             //------------------------------------------------------------------------------
-
-            // Fill area and corner
-            //-----------
-            // The area is defined by :
-            // - Table.Width -> Need it for auto-positionning
-            // - Table.Height -> Need it for auto-positionning
-            // The corner is the place where two scrollbars enconter.
-
-            if (sbVertical.ScrollBarType == ScrollBarType.Right && sbHorizontal.ScrollBarType == ScrollBarType.Bottom)
-            {
-                // Corner (Right-Bottom) :
-                // +-------------------+
-                // |                   |
-                // |                   |
-                // |                   |
-                // +------------------** <-- this corner 
-                e.Graphics.FillRectangle(
-                    new SolidBrush(sbVertical.BackgroundColor),
-                    Width - sbVertical.ScrollbarWidth,
-                    Height - sbHorizontal.ScrollbarWidth,
-                    sbVertical.ScrollbarWidth,
-                    sbHorizontal.ScrollbarWidth);
-
-                // Background (Right-Bottom and vertical)
-                e.Graphics.FillRectangle(
-                    new SolidBrush(sbVertical.BackgroundColor),
-                    Width - sbVertical.ScrollbarWidth,
-                    0,
-                    sbVertical.ScrollbarWidth,
-                    Height - sbVertical.ScrollbarWidth);
-
-                // Background (Right-Bottom and horizontal)
-                e.Graphics.FillRectangle(
-                    new SolidBrush(sbHorizontal.BackgroundColor),
-                    0,
-                    Height - sbHorizontal.ScrollbarWidth,
-                    Width - sbHorizontal.ScrollbarWidth,
-                    sbHorizontal.ScrollbarWidth);
-
-                //-------- Arrows --------
-                // Vertical - TOP
-                e.Graphics.FillRectangle(
-                    new SolidBrush(sbVertical.ElementsColor),
-                    Width - sbVertical.ScrollbarWidth,
-                    0,
-                    sbVertical.ScrollbarWidth,
-                    sbVertical.ScrollbarWidth);
-                xa = Width - sbVertical.ScrollbarWidth;
-                ya = 0;
-                p1 = new PointF(xa + sbVertical.ScrollbarWidth / 2f, ya + sbVertical.ScrollbarWidth / 3f);
-                p2 = new PointF(xa + sbVertical.ScrollbarWidth / 3f, ya + sbVertical.ScrollbarWidth / 3f);
-                p3 = new PointF(xa + sbVertical.ScrollbarWidth * 2f / 3f, ya + sbVertical.ScrollbarWidth / 3f);
-                e.Graphics.FillPolygon(new SolidBrush(Color.Yellow), new PointF[] { p1, p2, p3 });
-                // Vertical - BOTTOM
-                // Horizontal - LEFT
-                // Horizontal - RIGHT
-                //------------------------
-
-                // Corner
-                e.Graphics.DrawRectangle(
-                    new Pen(sbVertical.LineColor, sbVertical.LineWeight),
-                    Width - sbVertical.ScrollbarWidth,
-                    Height - sbHorizontal.ScrollbarWidth,
-                    sbVertical.ScrollbarWidth - 1,
-                    sbHorizontal.ScrollbarWidth - 1);
-
-                // Foreground lines (Right-Bottom and vertical)
-                e.Graphics.DrawRectangle(
-                    new Pen(sbVertical.LineColor, sbVertical.LineWeight),
-                    Width - sbVertical.ScrollbarWidth,
-                    0,
-                    sbVertical.ScrollbarWidth - 1,
-                    Height - sbVertical.ScrollbarWidth);
-
-                // Foreground lines (Right-Bottom and horizontal)
-                e.Graphics.DrawRectangle(
-                    new Pen(sbHorizontal.LineColor, sbHorizontal.LineWeight),
-                    0,
-                    Height - sbHorizontal.ScrollbarWidth,
-                    Width - sbHorizontal.ScrollbarWidth,
-                    sbHorizontal.ScrollbarWidth - 1);
-            }
-            else if (sbVertical.ScrollBarType == ScrollBarType.Right && sbHorizontal.ScrollBarType == ScrollBarType.Top)
-            {
-                // Corner (Right-Top) :
-                // +------------------** <-- this corner
-                // |                   |
-                // |                   |
-                // |                   |
-                // +-------------------+
-                e.Graphics.FillRectangle(
-                    new SolidBrush(sbVertical.BackgroundColor),
-                    Width - sbVertical.ScrollbarWidth,
-                    0,
-                    sbVertical.ScrollbarWidth,
-                    sbHorizontal.ScrollbarWidth);
-
-                // Background (Right-Top and vertical)
-                e.Graphics.FillRectangle(
-                    new SolidBrush(sbVertical.BackgroundColor),
-                    Width - sbVertical.ScrollbarWidth,
-                    sbVertical.ScrollbarWidth,
-                    sbVertical.ScrollbarWidth,
-                    Height);
-
-                // Background (Right-Top and horizontal)
-                e.Graphics.FillRectangle(
-                    new SolidBrush(sbHorizontal.BackgroundColor),
-                    0,
-                    0,
-                    Width - sbHorizontal.ScrollbarWidth,
-                    sbHorizontal.ScrollbarWidth);
-
-                // Corner
-                e.Graphics.DrawRectangle(
-                    new Pen(sbVertical.LineColor, sbVertical.LineWeight),
-                    Width - sbVertical.ScrollbarWidth,
-                    0,
-                    sbVertical.ScrollbarWidth - 1,
-                    sbHorizontal.ScrollbarWidth);
-
-                // Foreground lines (Right-Top and vertical)
-                e.Graphics.DrawRectangle(
-                    new Pen(sbVertical.LineColor, sbVertical.LineWeight),
-                    Width - sbVertical.ScrollbarWidth,
-                    sbVertical.ScrollbarWidth,
-                    sbVertical.ScrollbarWidth - 1,
-                    Height);
-
-                // Foreground lines (Right-Top and horizontal)
-                e.Graphics.DrawRectangle(
-                    new Pen(sbHorizontal.LineColor, sbHorizontal.LineWeight),
-                    0,
-                    0,
-                    Width - sbHorizontal.ScrollbarWidth,
-                    sbHorizontal.ScrollbarWidth);
-            }
-            else if (sbVertical.ScrollBarType == ScrollBarType.Left && sbHorizontal.ScrollBarType == ScrollBarType.Bottom)
-            {
-                // Corner
-                //                 +-------------------+
-                //                 |                   |
-                //                 |                   |
-                //                 |                   |
-                // this corner --> **------------------+ 
-                e.Graphics.FillRectangle(
-                    new SolidBrush(sbVertical.BackgroundColor),
-                    0,
-                    Height - sbHorizontal.ScrollbarWidth,
-                    sbVertical.ScrollbarWidth,
-                    sbHorizontal.ScrollbarWidth);
-
-                // Background (Left-Bottom and vertical)
-                e.Graphics.FillRectangle(
-                    new SolidBrush(sbVertical.BackgroundColor),
-                    0,
-                    0,
-                    sbVertical.ScrollbarWidth,
-                    Height - sbVertical.ScrollbarWidth);
-
-                // Background (Left-Bottom and horizontal)
-                e.Graphics.FillRectangle(
-                    new SolidBrush(sbHorizontal.BackgroundColor),
-                    sbHorizontal.ScrollbarWidth,
-                    Height - sbHorizontal.ScrollbarWidth,
-                    Width,
-                    sbHorizontal.ScrollbarWidth);
-
-                // Corner
-                e.Graphics.DrawRectangle(
-                    new Pen(sbVertical.LineColor, sbVertical.LineWeight),
-                    0,
-                    Height - sbHorizontal.ScrollbarWidth,
-                    sbVertical.ScrollbarWidth,
-                    sbHorizontal.ScrollbarWidth - 1);
-
-                // Foreground lines (Left-Bottom and vertical)
-                e.Graphics.DrawRectangle(
-                    new Pen(sbVertical.LineColor, sbVertical.LineWeight),
-                    0,
-                    0,
-                    sbVertical.ScrollbarWidth,
-                    Height - sbVertical.ScrollbarWidth);
-
-                // Foreground lines (Left-Bottom and horizontal)
-                e.Graphics.DrawRectangle(
-                    new Pen(sbHorizontal.LineColor, sbHorizontal.LineWeight),
-                    sbHorizontal.ScrollbarWidth,
-                    Height - sbHorizontal.ScrollbarWidth,
-                    Width,
-                    sbHorizontal.ScrollbarWidth - 1);
-            }
-            else if (sbVertical.ScrollBarType == ScrollBarType.Left && sbHorizontal.ScrollBarType == ScrollBarType.Top)
-            {
-                // Corner
-                // this corner --> **------------------+
-                //                 |                   |
-                //                 |                   |
-                //                 |                   |
-                //                 +-------------------+ 
-                e.Graphics.FillRectangle(
-                    new SolidBrush(sbVertical.BackgroundColor),
-                    0,
-                    0,
-                    sbVertical.ScrollbarWidth,
-                    sbHorizontal.ScrollbarWidth);
-
-                // Background (Left-Top and vertical)
-                e.Graphics.FillRectangle(
-                    new SolidBrush(sbVertical.BackgroundColor),
-                    0,
-                    sbHorizontal.ScrollbarWidth,
-                    sbVertical.ScrollbarWidth,
-                    Height - sbVertical.ScrollbarWidth);
-
-                // Background (Left-Top and horizontal)
-                e.Graphics.FillRectangle(
-                    new SolidBrush(sbHorizontal.BackgroundColor),
-                    sbHorizontal.ScrollbarWidth,
-                    0,
-                    Width,
-                    sbHorizontal.ScrollbarWidth);
-
-                // Corner
-                e.Graphics.DrawRectangle(
-                    new Pen(sbVertical.LineColor, sbVertical.LineWeight),
-                    0,
-                    0,
-                    sbVertical.ScrollbarWidth,
-                    sbHorizontal.ScrollbarWidth);
-
-                // Foreground lines (Left-Top and vertical)
-                e.Graphics.DrawRectangle(
-                    new Pen(sbVertical.LineColor, sbVertical.LineWeight),
-                    0,
-                    sbHorizontal.ScrollbarWidth,
-                    sbVertical.ScrollbarWidth,
-                    Height - sbVertical.ScrollbarWidth);
-
-                // Foreground lines (Left-Top and horizontal)
-                e.Graphics.DrawRectangle(
-                    new Pen(sbHorizontal.LineColor, sbHorizontal.LineWeight),
-                    sbHorizontal.ScrollbarWidth,
-                    0,
-                    Width,
-                    sbHorizontal.ScrollbarWidth);
-            }
+            //
+            // Corner (Right-Bottom) (NumPad 3):
+            // +-------------------+
+            // |                   |
+            // |                   |
+            // |                   |
+            // +------------------** <-- this corner
+            //
+            // Corner (Right-Top)  (NumPad 9):
+            // +------------------** <-- this corner
+            // |                   |
+            // |                   |
+            // |                   |
+            // +-------------------+
+            //
+            // Corner (Left-Bottom) (NumPad 1)
+            //                 +-------------------+
+            //                 |                   |
+            //                 |                   |
+            //                 |                   |
+            // this corner --> **------------------+ 
+            //
+            // Corner (Left-Top) (NumPad 7)
+            // this corner --> **------------------+
+            //                 |                   |
+            //                 |                   |
+            //                 |                   |
+            //                 +-------------------+ 
+            // Nothing to do because handled by ScrollManager class itself.
 
             #endregion
 

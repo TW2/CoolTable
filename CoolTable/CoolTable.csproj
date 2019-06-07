@@ -41,8 +41,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Control\Scrollbar.cs" />
-    <Compile Include="Control\ScrollBarType.cs" />
+    <Compile Include="Control\ScrollBarCorner.cs" />
+    <Compile Include="Control\ScrollBarManager.cs" />
     <Compile Include="Core\Bag.cs" />
     <Compile Include="Core\Column.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

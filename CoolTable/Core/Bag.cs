@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CoolTable.Control;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -8,6 +9,8 @@ namespace CoolTable.Core
 {
     public class Bag
     {
+        private ScrollBarCorner corner = ScrollBarCorner._3_Right_Bottom;
+
         private Font font = new Font("Arial", 10f, FontStyle.Regular);
 
         private object data = null;
@@ -46,6 +49,8 @@ namespace CoolTable.Core
         public Bag()
         {
         }
+
+        public ScrollBarCorner ScrollBarCorner { get => corner; set => corner = value; }
 
         public Font Font { get => font; set => font = value; }
 
