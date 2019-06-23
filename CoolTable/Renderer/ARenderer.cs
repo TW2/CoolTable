@@ -14,7 +14,7 @@ namespace CoolTable.Renderer
 
         } 
 
-        public void BorderDesign(Graphics g, Bag bag)
+        public virtual void BorderDesign(Graphics g, Bag bag)
         {
             Color back = bag.IsLineNumberColumn == true ?
                     bag.GetLineNumberBackgroundColor() : 
@@ -24,7 +24,7 @@ namespace CoolTable.Renderer
             g.DrawRectangle(new Pen(bag.LineColor, bag.LineWeight), bag.X, bag.Y, bag.Width, bag.LineHeight);
         }
 
-        public void HeaderDesign(Graphics g, Bag bag)
+        public virtual void HeaderDesign(Graphics g, Bag bag)
         {
             g.FillRectangle(new SolidBrush(bag.GetHeaderBackgroundColor()), bag.X, bag.Y, bag.Width, bag.LineHeight);
             g.DrawRectangle(new Pen(bag.LineColor, bag.LineWeight), bag.X, bag.Y, bag.Width, bag.LineHeight);
@@ -32,7 +32,7 @@ namespace CoolTable.Renderer
             g.DrawString(bag.HeaderText, bag.Font, new SolidBrush(bag.GetHeaderForegroundColor()), rectf);
         }
 
-        public void InnerDesign(Graphics g, Bag bag)
+        public virtual void InnerDesign(Graphics g, Bag bag)
         {
             Color fore = bag.IsLineNumberColumn == true ?
                     bag.GetLineNumberForegroundColor() :

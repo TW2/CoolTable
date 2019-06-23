@@ -16,15 +16,58 @@ namespace CoolTable
         Bag bag = new Bag();
         List<Column> columns = new List<Column>();
         ScrollBarManager manager = null;
+        bool alwaysDisplayHeader = true;
+
+        float curY, oldCurY = 0f;
+        float grip = 25;
 
         public Table()
         {
             InitializeComponent();
             Console.WriteLine("Hello World");
             DoubleBuffered = true;
-            manager = ScrollBarManager.Create(ScrollBarCorner._3_Right_Bottom, this);
+            manager = ScrollBarManager.Create(ScrollBarCorner._1_Left_Bottom, this);
             Resize += Table_Resize;
             Paint += Table_Paint;
+            MouseWheel += Table_MouseWheel;
+        }
+
+        private void Table_MouseWheel(object sender, MouseEventArgs e)
+        {
+            oldCurY = oldCurY + (e.Delta > 0 ? 3 : -3);
+
+            if(oldCurY < -GetLinesCount())
+            {
+                oldCurY = -GetLinesCount();
+            }
+
+            if(oldCurY > 0)
+            {
+                oldCurY = 0;
+            }
+
+
+            Event.ScrollEventArgs evt = new Event.ScrollEventArgs(
+                oldCurY,
+                GetLinesCountHeight(),
+                bag);
+            
+            curY = -evt.Position;
+            grip = GetLinesCountHeight() / 4f;
+            if (grip < 20) { grip = 20; }
+
+            _Scrolling(evt);
+        }
+
+        public event EventHandler<Event.ScrollEventArgs> OnScrolling;
+
+        protected virtual void _Scrolling(Event.ScrollEventArgs e)
+        {
+            EventHandler<Event.ScrollEventArgs> handler = OnScrolling;
+            if (handler != null)
+            {
+                handler(this, e);
+            }
         }
 
         private void Table_Resize(object sender, EventArgs e)
@@ -35,63 +78,51 @@ namespace CoolTable
         private void Table_Paint(object sender, PaintEventArgs e)
         {
             //Initialization for table
-            float x = 0;// - horScrollBar.Value;
+            float xOffset = 0;
+            float yOffset = 0;
             float xColumn, yRow;
             int lineIndex = 0;
+
+            grip = GetLinesCountHeight() / 4f;
+            if (grip < 20) { grip = 20; }
+
+            switch (manager.Corner)
+            {
+                case ScrollBarCorner._1_Left_Bottom:
+                    xOffset = manager.ScrollbarWidth; // Avoid scrollbar
+                    yOffset = 0;
+                    break;
+                case ScrollBarCorner._3_Right_Bottom:
+                    xOffset = 0;
+                    yOffset = 0;
+                    break;
+                case ScrollBarCorner._7_Left_Top:
+                    xOffset = manager.ScrollbarWidth; // Avoid scrollbar
+                    yOffset = manager.ScrollbarWidth; // Avoid scrollbar
+                    break;
+                case ScrollBarCorner._9_Right_Top:
+                    xOffset = 0;
+                    yOffset = manager.ScrollbarWidth; // Avoid scrollbar
+                    break;
+            }
+
+            // La valeur de l'offset doit être inférieur à 0 et supérieur à -(total de lignes * lineheight)
+            // Mise à jour par une fonction appelée avant.
+            // D'où :
+            yOffset -= curY;
 
             //==============================================================================
             // Fill the background with default back color
             //------------------------------------------------------------------------------
             e.Graphics.FillRectangle(new SolidBrush(Color.White), 0, 0, Width, Height);
-
-            //==============================================================================
-            // Update scrollbars
-            //------------------------------------------------------------------------------
-            manager.DrawScrollbars(e);
-
-            #region Header of a table
-
-            //==============================================================================
-            // HEADER
-            //------------------------------------------------------------------------------
-            xColumn = x;
-            for (int i = 0; i < columns.Count; i++)
-            {
-                Column c = columns[i];
-
-                //Fill the bag
-                bag.X = xColumn;
-                bag.Y = 0;
-                bag.Width = c.ColumnWidth;
-                bag.LineHeight = 20;
-                bag.ColumnIndex = c.ColumnIndex;
-                bag.RowIndex = 0;
-                bag.HeaderText = c.Title;
-
-                //Drawing
-                //if (c.PageLayout != null)
-                //{
-                //    c.PageLayout.GetHeader(e.Graphics, bag);
-                //}
-                //else
-                //{
-                //    c.BoxRenderer.GetHeader(e.Graphics, bag);
-                //}
-                c.Renderer.HeaderDesign(e.Graphics, bag);
-
-                //Initialization for next loop
-                xColumn += c.ColumnWidth;
-            }
-
-            #endregion
-
+            
             #region Lines of table
 
             //==============================================================================
             // LINES
             //------------------------------------------------------------------------------
-            xColumn = x;
-            yRow = 20; //Height of header
+            xColumn = xOffset;
+            yRow = yOffset + manager.ScrollbarWidth; // Height of header = scrollbarWidth (default: 20px)
             lineIndex = 0;
             for (int i = 0; i < columns.Count; i++)
             {
@@ -113,15 +144,6 @@ namespace CoolTable
                     bag.Y = yRow;
                     bag.RowIndex = j;
 
-                    //if (c.PageLayout != null)
-                    //{
-                    //    c.PageLayout.GetLines(e.Graphics, bag);
-                    //}
-                    //else
-                    //{
-                    //    c.BoxRenderer.GetLines(e.Graphics, bag);
-                    //}
-
                     c.Renderer.BorderDesign(e.Graphics, bag);
 
                     yRow += 20;
@@ -129,7 +151,7 @@ namespace CoolTable
 
                 //Initialization for next loop
                 xColumn += c.ColumnWidth;
-                yRow = 20;
+                yRow = yOffset + manager.ScrollbarWidth;
             }
 
             #endregion
@@ -139,8 +161,8 @@ namespace CoolTable
             //==============================================================================
             // DATA
             //------------------------------------------------------------------------------
-            xColumn = x;
-            yRow = 20;
+            xColumn = xOffset;
+            yRow = yOffset + manager.ScrollbarWidth; // Height of header = scrollbarWidth (default: 20px)
             lineIndex = 0;
             for (int i = 0; i < columns.Count; i++)
             {
@@ -165,32 +187,42 @@ namespace CoolTable
                     bag.RowIndex = j;                    
                     bag.Data = c.IsLineNumberColumn == false ? data : Convert.ToString(j + 1);
 
-                    //if (c.Rules != null)
-                    //{
-                    //    c.BoxRenderer.GetRender(e.Graphics, bag);// Default value
-
-                    //    foreach (IRule rule in c.Rules)
-                    //    {
-                    //        rule.GetColumnRule(e.Graphics, bag);// If rule = override
-                    //    }
-                    //}
-                    //else if (c.PageLayout != null)
-                    //{
-                    //    c.PageLayout.GetRender(e.Graphics, bag);
-                    //}
-                    //else
-                    //{
-                    //    c.BoxRenderer.GetRender(e.Graphics, bag);
-                    //}
-
                     c.Renderer.InnerDesign(e.Graphics, bag);
 
-                    yRow += 20;
+                    yRow += manager.ScrollbarWidth;
                 }
 
                 //Initialization for next loop
                 xColumn += c.ColumnWidth;
-                yRow = 20;
+                yRow = yOffset + manager.ScrollbarWidth;
+            }
+
+            #endregion
+
+            #region Header of a table
+
+            //==============================================================================
+            // HEADER
+            //------------------------------------------------------------------------------
+            xColumn = xOffset;
+            yRow = yOffset;
+            for (int i = 0; i < columns.Count; i++)
+            {
+                Column c = columns[i];
+
+                //Fill the bag
+                bag.X = xColumn;
+                bag.Y = alwaysDisplayHeader == false ? yRow : 0;
+                bag.Width = c.ColumnWidth;
+                bag.LineHeight = 20;
+                bag.ColumnIndex = c.ColumnIndex;
+                bag.RowIndex = 0;
+                bag.HeaderText = c.Title;
+
+                c.Renderer.HeaderDesign(e.Graphics, bag);
+
+                //Initialization for next loop
+                xColumn += c.ColumnWidth;
             }
 
             #endregion
@@ -228,24 +260,78 @@ namespace CoolTable
             //                 |                   |
             //                 |                   |
             //                 +-------------------+ 
-            // Nothing to do because handled by ScrollManager class itself.
+            manager.DrawScrollbars(e);
 
             #endregion
 
         }
 
-        public void AddLineNumberColumn()
+        public Bag GetBag()
         {
-            Column c = Column.Create(typeof(string), "Line", 50);
+            return bag;
+        }
+
+        public int GetColumnsCount()
+        {
+            return columns.Count;
+        }
+
+        public int GetLinesCount()
+        {
+            return columns.Count > 0 ? columns[0].DataCount : 0;
+        }
+
+        public int GetLinesCountHeight()
+        {
+            int lines = columns.Count > 0 ? columns[0].DataCount : 0;
+            return Convert.ToInt32(lines * bag.LineHeight);
+        }
+
+        public float GetColumnsWidth()
+        {
+            float output = 0f;
+
+            foreach(Column c in columns)
+            {
+                output += c.ColumnWidth;
+            }
+
+            return output;
+        }
+
+        public float GetGrip()
+        {
+            return grip;
+        }
+
+        public void AddLineNumberColumn(string title = "Line")
+        {
+            Column c = Column.Create(typeof(string), title, 50);
             c.IsLineNumberColumn = true;
             c.ColumnIndex = columns.Count;
             columns.Add(c);
+
+            // Update columns size
+            float wc = 0f;
+            foreach(Column cx in columns)
+            {
+                wc += cx.ColumnWidth;
+            }
+            manager.ColumnWrap = wc;
         }
 
         public void AddColumn(Column c)
         {
             c.ColumnIndex = columns.Count;
             columns.Add(c);
+
+            // Update columns size
+            float wc = 0f;
+            foreach (Column cx in columns)
+            {
+                wc += cx.ColumnWidth;
+            }
+            manager.ColumnWrap = wc;
         }
 
         public void AddRow(object[] values)
@@ -271,6 +357,9 @@ namespace CoolTable
                     columns[i].AddValue(values[i]);
                 }                
             }
+
+            // Update maximum value
+            manager.MaximumValue = GetLinesCountHeight();
 
             Refresh();
         }

@@ -45,6 +45,7 @@
     <Compile Include="Control\ScrollBarManager.cs" />
     <Compile Include="Core\Bag.cs" />
     <Compile Include="Core\Column.cs" />
+    <Compile Include="Event\ScrollEventArgs.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Renderer\ARenderer.cs" />
     <Compile Include="Renderer\IRenderer.cs" />

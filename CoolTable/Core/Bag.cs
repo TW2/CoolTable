@@ -14,6 +14,7 @@ namespace CoolTable.Core
         private Font font = new Font("Arial", 10f, FontStyle.Regular);
 
         private object data = null;
+        private bool useCustomData = false;
         private float x = 0;
         private float y = 0;
         private float width = 150;
@@ -55,6 +56,7 @@ namespace CoolTable.Core
         public Font Font { get => font; set => font = value; }
 
         public object Data { get => data; set => data = value; }
+        public bool UseCustomData { get => useCustomData; set => useCustomData = value; }
         public float X { get => x; set => x = value; }
         public float Y { get => y; set => y = value; }
         public float Width { get => width; set => width = value; }

@@ -55,7 +55,7 @@ namespace CoolTable.Core
         /// <param name="width">Width. Default is 150 pixels.</param>
         /// <param name="canEdit">If object has editor and true then we can modify otherwise nothing will happens.</param>
         /// <returns>A semi configured Column.</returns>
-        public static Column Create(Type type, string headerTitle = "", float width = 150f, bool canEdit = false)
+        public static Column Create(Type type, string headerTitle = "", float width = 150f, bool canEdit = false, IRenderer renderer = null)
         {
             Column c = new Column();
 
@@ -65,8 +65,15 @@ namespace CoolTable.Core
             c.ColumnWidth = width;
             c.canEdit = canEdit;
 
-            if (type == typeof(object)) { c.Renderer = new StringRenderer(); } // <- TODO AdaptiveRenderer
-            if (type == typeof(string)) { c.Renderer = new StringRenderer(); }
+            if (renderer != null)
+            {
+                c.Renderer = renderer;
+            }
+            else
+            {
+                if (type == typeof(object)) { c.Renderer = new StringRenderer(); } // <- TODO AdaptiveRenderer
+                if (type == typeof(string)) { c.Renderer = new StringRenderer(); }
+            }
 
             return c;
         }
