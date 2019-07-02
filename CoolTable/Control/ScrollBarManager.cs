@@ -409,7 +409,7 @@ namespace CoolTable.Control
         private void DrawVerticalSlider(ScrollBarCorner corner, System.Windows.Forms.PaintEventArgs e)
         {
             // Valeur courante :
-            Console.WriteLine("Valeur courante : " + curValue);
+            //Console.WriteLine("Valeur courante : " + curValue);
             // La valeur courante est une valeur qui définit la distance entre
             // le haut de la table et le bas sans compter les scrollbars.
 
@@ -429,10 +429,10 @@ namespace CoolTable.Control
             // 0% = 100% * 0 / 25
             // y = 100 x / lineCount
             // y = Math.Abs(curValue) / maxValue
-            Console.WriteLine("Wanted : " + Math.Abs(curValue) / maxValue + " >>>> " + yc);
+            //Console.WriteLine("Wanted : " + Math.Abs(curValue) / maxValue + " >>>> " + yc);
 
             // Grip :
-            Console.WriteLine("Grip ? "+ parentCtrl.GetGrip());
+            //Console.WriteLine("Grip ? "+ parentCtrl.GetGrip());
             // Le grip est lm'endroit qui glisse dans la scrollbar.
             // Il doit être dessiné.
 
@@ -444,7 +444,7 @@ namespace CoolTable.Control
                 a += scrollbarWidth;
             }
             gripY = Convert.ToInt32(a);
-            Console.WriteLine("Y = " + gripY);
+            //Console.WriteLine("Y = " + gripY);
 
             if(corner == ScrollBarCorner._1_Left_Bottom)
             {
